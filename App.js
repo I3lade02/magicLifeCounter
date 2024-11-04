@@ -1,3 +1,10 @@
+//TODO:
+/*
+#add a possibility of changing color of each player
+#united menu with options for reseting game, chaning number of players
+#add counters(poison counter, commander dmg, energy counter, loyalty counter, mana counter)
+*/
+
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Switch } from 'react-native';
 
