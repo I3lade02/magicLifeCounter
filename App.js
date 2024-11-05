@@ -3,15 +3,17 @@ import { StyleSheet, Text, View, TouchableOpacity, Switch, Modal, TextInput } fr
 
 export default function App() {
   const [numPlayers, setNumPlayers] = useState(2);
-  const [players, setPlayers] = useState(Array(numPlayers).fill({ life: 40, name: '' }));
+  const [players, setPlayers] = useState(Array(numPlayers).fill({ life: 40, poison: 0, name: '' }));
   const [initialLife, setInitialLife] = useState(40);
   const [tempLife, setTempLife] = useState('40');
   const [darkMode, setDarkMode] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [poisonModalVisible, setPoisonModalVisible] = useState(false);
+  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(null);
 
   const updateNumPlayers = (newNum) => {
     setNumPlayers(newNum);
-    setPlayers(Array(newNum).fill({ life: initialLife, name: '' }));
+    setPlayers(Array(newNum).fill({ life: initialLife, poison: 0, name: '' }));
   };
 
   const updateLife = (index, delta) => {
@@ -20,8 +22,14 @@ export default function App() {
     setPlayers(newPlayers);
   };
 
+  const updatePoison = (index, delta) => {
+    const newPlayers = [...players];
+    newPlayers[index].poison += delta;
+    setPlayers(newPlayers);
+  };
+
   const resetLife = () => {
-    setPlayers(players.map(player => ({ ...player, life: initialLife })));
+    setPlayers(players.map(player => ({ ...player, life: initialLife, poison: 0 })));
   };
 
   const toggleDarkMode = () => {
@@ -31,7 +39,7 @@ export default function App() {
   const handleSaveSettings = () => {
     const parsedLife = parseInt(tempLife) || 40;
     setInitialLife(parsedLife);
-    setPlayers(players.map(player => ({ ...player, life: parsedLife })));
+    setPlayers(players.map(player => ({ ...player, life: parsedLife, poison: 0 })));
     setIsModalVisible(false);
   };
 
@@ -43,28 +51,18 @@ export default function App() {
 
   const handleLifeInputChange = (text) => {
     setTempLife(text);
-  }
+  };
 
-  // Dynamické styly pro rozložení a rotaci hráčů
-  const getPlayerContainerStyle = (index) => {
-    let rotation = '0deg'; 
-    let containerStyle = styles.playerContainer;
+  const openPoisonModal = (index) => {
+    setCurrentPlayerIndex(index);
+    setPoisonModalVisible(true);
+  };
 
-    if (numPlayers === 2) {
-      containerStyle = styles.halfHeight;
-      rotation = index === 0 ? '180deg' : '0deg';
-    } else if (numPlayers === 3) {
-      if (index < 2) {
-        rotation = index === 0 ? '90deg' : '270deg';
-      } else {
-        containerStyle = styles.centeredHalfHeight;
-      }
-    } else if (numPlayers === 4) {
-      containerStyle = styles.quarterContainer;
-      rotation = index % 2 === 0 ? '90deg' : '270deg';
+  const handlePoisonChange = (delta) => {
+    if (currentPlayerIndex !== null) {
+      updatePoison(currentPlayerIndex, delta);
     }
-
-    return [containerStyle, { transform: [{ rotate: rotation }] }];
+    setPoisonModalVisible(false);
   };
 
   return (
@@ -115,22 +113,26 @@ export default function App() {
           ))}
 
           <TouchableOpacity style={styles.saveButton} onPress={handleSaveSettings}>
-            <Text style={styles.buttonText}>Uložit</Text>
+            <Text style={styles.saveButtonText}>Uložit</Text>
           </TouchableOpacity>
         </View>
       </Modal>
 
       <View style={styles.playersContainer}>
         {players.map((player, index) => (
-          <View key={index} style={[styles.playerContainer, getPlayerContainerStyle(index)]}>
+          <View key={index} style={styles.playerContainer}>
             <Text style={darkMode ? styles.darkText : styles.lightText}>{player.name || `Hráč ${index + 1}`}</Text>
-            <Text style={styles.lifeText}>{player.life}</Text>
+            <Text style={styles.lifeText}>Životy: {player.life}</Text>
+            <Text style={styles.poisonText}>Jed: {player.poison}</Text>
             <View style={styles.buttonRow}>
               <TouchableOpacity style={styles.button} onPress={() => updateLife(index, 1)}>
-                <Text style={styles.buttonText}>+</Text>
+                <Text style={styles.buttonText}>+ Život</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.button} onPress={() => updateLife(index, -1)}>
-                <Text style={styles.buttonText}>-</Text>
+                <Text style={styles.buttonText}>- Život</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.poisonButton} onPress={() => openPoisonModal(index)}>
+                <Text style={styles.poisonButtonText}>+</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -138,8 +140,25 @@ export default function App() {
       </View>
 
       <TouchableOpacity style={styles.resetButton} onPress={resetLife}>
-        <Text style={styles.resetButtonText}>Resetovat životy</Text>
+        <Text style={styles.resetButtonText}>Resetovat životy a jed</Text>
       </TouchableOpacity>
+
+      <Modal visible={poisonModalVisible} animationType="slide">
+        <View style={styles.modalContainer}>
+          <Text style={styles.modalTitle}>Upravit Jed pro {players[currentPlayerIndex]?.name || `Hráče ${currentPlayerIndex + 1}`}</Text>
+          <View style={styles.poisonChangeContainer}>
+            <TouchableOpacity onPress={() => handlePoisonChange(1)} style={styles.poisonChangeButton}>
+              <Text style={styles.poisonChangeText}>Přidat Jed</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handlePoisonChange(-1)} style={styles.poisonChangeButton}>
+              <Text style={styles.poisonChangeText}>Odebrat Jed</Text>
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity style={styles.closeModalButton} onPress={() => setPoisonModalVisible(false)}>
+            <Text style={styles.closeModalText}>Zavřít</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -147,30 +166,36 @@ export default function App() {
 // Stylování
 const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', paddingTop: 20 },
-  darkContainer: { backgroundColor: '#121212' },
-  lightContainer: { backgroundColor: '#F5F5F5' },
+  darkContainer: { backgroundColor: '#333' },
+  lightContainer: { backgroundColor: '#fff' },
   switchContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
-  settingsButton: { backgroundColor: '#1E90FF', padding: 10, borderRadius: 5 },
-  playerSelection: { flexDirection: 'row', marginBottom: 20, justifyContent: 'center' },
-  playerButton: { backgroundColor: '#1E90FF', paddingVertical: 8, paddingHorizontal: 20, margin: 5, borderRadius: 5 },
-  selectedButton: { backgroundColor: '#FFD700' },
-  playersContainer: { flex: 1, width: '100%', flexDirection: 'row', flexWrap: 'wrap' },
-  playerContainer: { width: '50%', height: '50%', justifyContent: 'center', alignItems: 'center', padding: 10 },
-  buttonRow: { flexDirection: 'row', marginTop: 10 },
-  button: { backgroundColor: '#1E90FF', paddingVertical: 10, paddingHorizontal: 20, marginHorizontal: 5, borderRadius: 5 },
-  buttonText: { fontSize: 24, color: '#FFF' },
-  lifeText: { fontSize: 48, fontWeight: 'bold', color: '#FFD700' },
-  resetButton: { backgroundColor: '#FF4500', paddingVertical: 12, paddingHorizontal: 40, borderRadius: 8, marginTop: 20 },
-  resetButtonText: { fontSize: 18, color: '#FFF' },
-  darkText: { color: '#FFF' },
-  lightText: { color: '#333' },
-  modalContainer: { flex: 1, justifyContent: 'center', padding: 20, backgroundColor: 'white' },
-  modalTitle: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
-  modalLabel: { fontSize: 18, marginBottom: 5 },
-  input: { borderWidth: 1, borderColor: '#DDD', padding: 8, borderRadius: 5, marginBottom: 15 },
-  saveButton: { backgroundColor: '#1E90FF', padding: 10, borderRadius: 5, alignItems: 'center' },
+  darkText: { color: '#fff' },
+  lightText: { color: '#000' },
+  settingsButton: { padding: 10, backgroundColor: '#007BFF', borderRadius: 5, marginBottom: 20 },
+  buttonText: { color: '#fff' },
+  modalContainer: { flex: 1, padding: 20, backgroundColor: '#fff' },
+  modalTitle: { fontSize: 24, marginBottom: 20 },
+  modalLabel: { fontSize: 16, marginVertical: 10 },
+  input: { borderWidth: 1, borderColor: '#ccc', borderRadius: 5, padding: 10, marginBottom: 15 },
+  playerSelection: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: 20 },
+  playerButton: { padding: 10, borderWidth: 1, borderColor: '#007BFF', borderRadius: 5 },
+  selectedButton: { backgroundColor: '#007BFF' },
   playerInputContainer: { marginBottom: 10 },
-  centeredHalfHeight: { height: '50%', width: '100%', justifyContent: 'center', alignItems: 'center' },
-  halfHeight: { height: '50%', width: '100%', justifyContent: 'center', alignItems: 'center' },
-  quarterContainer: { height: '50%', width: '50%', justifyContent: 'center', alignItems: 'center' },
+  saveButton: { padding: 10, backgroundColor: '#28A745', borderRadius: 5, marginTop: 20 },
+  saveButtonText: { color: '#fff' },
+  playersContainer: { flex: 1, width: '100%', alignItems: 'center' },
+  playerContainer: { width: '90%', padding: 20, backgroundColor: '#f7f7f7', borderRadius: 10, marginVertical: 10 },
+  lifeText: { fontSize: 18 },
+  poisonText: { fontSize: 18 },
+  buttonRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 },
+  button: { flex: 1, padding: 10, backgroundColor: '#007BFF', borderRadius: 5, marginHorizontal: 5 },
+  poisonButton: { padding: 10, backgroundColor: '#6C757D', borderRadius: 5 },
+  poisonButtonText: { color: '#fff' },
+  resetButton: { padding: 15, backgroundColor: '#FFC107', borderRadius: 5, marginVertical: 20 },
+  resetButtonText: { color: '#fff' },
+  poisonChangeContainer: { flexDirection: 'row', justifyContent: 'center', marginTop: 20 },
+  poisonChangeButton: { padding: 10, backgroundColor: '#17A2B8', borderRadius: 5, marginHorizontal: 10 },
+  poisonChangeText: { color: '#fff' },
+  closeModalButton: { padding: 10, backgroundColor: '#DC3545', borderRadius: 5, marginTop: 20 },
+  closeModalText: { color: '#fff' }
 });
