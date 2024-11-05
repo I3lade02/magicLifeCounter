@@ -12,6 +12,8 @@ A simple and customizable life counter app for Magic: The Gathering (MTG) built 
 - **Dark and Light Mode**: Switch between dark and light mode themes for better visibility.
 - **Easy Life Adjustments**: Increase or decrease life points with one-touch controls.
 - **Life Reset**: Reset all players' life points to the initial value.
+- **Set you initial life value**: You can change the initial lfie value according to game format.
+- **Change the player names**: You can set the player names to specify player positions on the screen.
 
 ## Installation
 
