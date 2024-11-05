@@ -15,6 +15,13 @@ A simple and customizable life counter app for Magic: The Gathering (MTG) built 
 - **Set you initial life value**: You can change the initial lfie value according to game format.
 - **Change the player names**: You can set the player names to specify player positions on the screen.
 
+## Screenshots
+
+![2 hráči](screenshots/2_hraci.jpg)
+![3 hráči](screenshots/3_hraci.jpg)
+![4 hráči](screenshots/4_hraci.jpg)
+![Nastavení](screenshots/nastaveni.jpg)
+
 ## Installation
 
 1. **Clone the repository**:
