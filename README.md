@@ -22,6 +22,11 @@ A simple and customizable life counter app for Magic: The Gathering (MTG) built 
 ![4 hráči](screenshots/4_hraci.jpg)
 ![Nastavení](screenshots/nastaveni.jpg)
 
+<img src='screenshots/2_hraci.jpg' alt='2 hráči' width='10%' height='auto' />
+<img src='screenshots/3_hraci.jpg' alt='3 hráči' width='10%' height='auto' />
+<img src='screenshots/4_hraci.jpg' alt='4 hráči' width='10%' height='auto' />
+<img src='screenshots/nastaveni.jpg' alt='Nastavení' width='10%' height='auto' />
+
 ## Installation
 
 1. **Clone the repository**:
