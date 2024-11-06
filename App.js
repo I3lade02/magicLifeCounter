@@ -65,6 +65,37 @@ export default function App() {
     setPoisonModalVisible(false);
   };
 
+  const getPlayerRotation = (index) => {
+    if (numPlayers === 2) {
+      return index === 0 ? '180deg' : '0deg';
+    }
+    if (numPlayers === 3) {
+      return index === 0 ? '90deg' : index === 1 ? '-90deg' : '0deg';
+    }
+    if (numPlayers === 4) {
+      return index % 2 === 0 ? '90deg' : '-90deg';
+    }
+    return '0deg';
+  };
+
+  const getPlayerPosition = (index) => {
+    if (numPlayers === 2) {
+      return index === 0 ? styles.topHalf : styles.bottomHalf;
+    }
+    if (numPlayers === 3) {
+      return index === 0 ? styles.topLeftQuarter
+           : index === 1 ? styles.topRightQuarter
+           : styles.bottomCenterHalf;
+    }
+    if (numPlayers === 4) {
+      return index === 0 ? styles.topLeftQuarter
+           : index === 1 ? styles.topRightQuarter
+           : index === 2 ? styles.bottomLeftQuarter
+           : styles.bottomRightQuarter;
+    }
+    return styles.centerPosition; // Výchozí pozice, pokud by bylo nastaveno něco jiného než 2-4 hráči
+  };
+
   return (
     <View style={[styles.container, darkMode ? styles.darkContainer : styles.lightContainer]}>
       <View style={styles.switchContainer}>
@@ -119,24 +150,33 @@ export default function App() {
       </Modal>
 
       <View style={styles.playersContainer}>
-        {players.map((player, index) => (
-          <View key={index} style={styles.playerContainer}>
-            <Text style={darkMode ? styles.darkText : styles.lightText}>{player.name || `Hráč ${index + 1}`}</Text>
-            <Text style={styles.lifeText}>Životy: {player.life}</Text>
-            <Text style={styles.poisonText}>Jed: {player.poison}</Text>
-            <View style={styles.buttonRow}>
-              <TouchableOpacity style={styles.button} onPress={() => updateLife(index, 1)}>
-                <Text style={styles.buttonText}>+ Život</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={() => updateLife(index, -1)}>
-                <Text style={styles.buttonText}>- Život</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.poisonButton} onPress={() => openPoisonModal(index)}>
-                <Text style={styles.poisonButtonText}>+</Text>
-              </TouchableOpacity>
+            {players.map((player, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.playerContainer,
+                  { transform: [{ rotate: getPlayerRotation(index) }] },
+                  getPlayerPosition(index)  // Apply position styles
+                ]}
+              >
+                <Text style={darkMode ? styles.darkText : styles.lightText}>
+                  {player.name || `Player ${index + 1}`}
+                </Text>
+                <Text style={styles.lifeText}>Life: {player.life}</Text>
+                <Text style={styles.poisonText}>Poison: {player.poison}</Text>
+              <View style={styles.buttonRow}>
+                <TouchableOpacity style={styles.button} onPress={() => updateLife(index, 1)}>
+                  <Text style={styles.buttonText}>+ Život</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={() => updateLife(index, -1)}>
+                  <Text style={styles.buttonText}>- Život</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.poisonButton} onPress={() => openPoisonModal(index)}>
+                  <Text style={styles.poisonButtonText}>+</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        ))}
+          ))}
       </View>
 
       <TouchableOpacity style={styles.resetButton} onPress={resetLife}>
@@ -184,7 +224,7 @@ const styles = StyleSheet.create({
   saveButton: { padding: 10, backgroundColor: '#28A745', borderRadius: 5, marginTop: 20 },
   saveButtonText: { color: '#fff' },
   playersContainer: { flex: 1, width: '100%', alignItems: 'center' },
-  playerContainer: { width: '90%', padding: 20, backgroundColor: '#f7f7f7', borderRadius: 10, marginVertical: 10 },
+  playerContainer: { width: '40%', padding: 20, backgroundColor: '#f7f7f7', borderRadius: 10, marginVertical: 10, alignItems: 'center' },
   lifeText: { fontSize: 18 },
   poisonText: { fontSize: 18 },
   buttonRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 },
@@ -197,5 +237,13 @@ const styles = StyleSheet.create({
   poisonChangeButton: { padding: 10, backgroundColor: '#17A2B8', borderRadius: 5, marginHorizontal: 10 },
   poisonChangeText: { color: '#fff' },
   closeModalButton: { padding: 10, backgroundColor: '#DC3545', borderRadius: 5, marginTop: 20 },
-  closeModalText: { color: '#fff' }
+  closeModalText: { color: '#fff' },
+  topHalf: { flex: 1, justifyContent: 'center', alignItems: 'center', width: '90%' },
+  bottomHalf: { flex: 1, justifyContent: 'center', alignItems: 'center', width: '90%' },
+  topLeftQuarter: { flex: 1, justifyContent: 'center', alignItems: 'center', width: '50%', position: 'absolute', top: 0, left: 0 },
+  topRightQuarter: { flex: 1, justifyContent: 'center', alignItems: 'center', width: '50%', position: 'absolute', top: 0, right: 0 },
+  bottomCenterHalf: { flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%', position: 'absolute', bottom: 70, width: '90%'},
+  bottomLeftQuarter: { flex: 1, justifyContent: 'center', alignItems: 'center', width: '50%', position: 'absolute', bottom: 0, left: 0 },
+  bottomRightQuarter: { flex: 1, justifyContent: 'center', alignItems: 'center', width: '50%', position: 'absolute', bottom: 0, right: 0 },
+  centerPosition: { alignSelf: 'center' }, // Výchozí pozice
 });
