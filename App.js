@@ -62,7 +62,6 @@ export default function App() {
     if (currentPlayerIndex !== null) {
       updatePoison(currentPlayerIndex, delta);
     }
-    setPoisonModalVisible(false);
   };
 
   const getPlayerRotation = (index) => {
@@ -162,7 +161,7 @@ export default function App() {
                 <Text style={darkMode ? styles.darkText : styles.lightText}>
                   {player.name || `Player ${index + 1}`}
                 </Text>
-                <Text style={styles.lifeText}>Life: {player.life}</Text>
+                <Text style={[styles.lifeText, player.life <= 0 && styles.lifeTextDanger]}>Life: {player.life}</Text>
                 <Text style={styles.poisonText}>Poison: {player.poison}</Text>
               <View style={styles.buttonRow}>
                 <TouchableOpacity style={styles.button} onPress={() => updateLife(index, 1)}>
@@ -185,7 +184,12 @@ export default function App() {
 
       <Modal visible={poisonModalVisible} animationType="slide">
         <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>Upravit Jed pro {players[currentPlayerIndex]?.name || `Hráče ${currentPlayerIndex + 1}`}</Text>
+          <Text style={styles.modalTitle}>
+            Upravit Jed pro {players[currentPlayerIndex]?.name || `Hráče ${currentPlayerIndex + 1}`}
+          </Text>
+          <Text style={styles.poisonText}>
+            Aktuální Jed: {players[currentPlayerIndex]?.poison || 0}
+          </Text>
           <View style={styles.poisonChangeContainer}>
             <TouchableOpacity onPress={() => handlePoisonChange(1)} style={styles.poisonChangeButton}>
               <Text style={styles.poisonChangeText}>Přidat Jed</Text>
@@ -211,8 +215,8 @@ const styles = StyleSheet.create({
   switchContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
   darkText: { color: '#fff' },
   lightText: { color: '#000' },
-  settingsButton: { padding: 10, backgroundColor: '#007BFF', borderRadius: 5, marginBottom: 20 },
-  buttonText: { color: '#fff' },
+  settingsButton: { padding: 10, backgroundColor: '#007BFF', borderRadius: 5, marginBottom: 20, alignItems: 'center', justifyContent: 'center' },
+  buttonText: { color: '#000', textAlign: 'center' },
   modalContainer: { flex: 1, padding: 20, backgroundColor: '#fff' },
   modalTitle: { fontSize: 24, marginBottom: 20 },
   modalLabel: { fontSize: 16, marginVertical: 10 },
@@ -221,17 +225,17 @@ const styles = StyleSheet.create({
   playerButton: { padding: 10, borderWidth: 1, borderColor: '#007BFF', borderRadius: 5 },
   selectedButton: { backgroundColor: '#007BFF' },
   playerInputContainer: { marginBottom: 10 },
-  saveButton: { padding: 10, backgroundColor: '#28A745', borderRadius: 5, marginTop: 20 },
+  saveButton: { padding: 10, backgroundColor: '#007BFF', borderRadius: 5, marginTop: 20, alignItems: 'center', justifyContent: 'center' },
   saveButtonText: { color: '#fff' },
   playersContainer: { flex: 1, width: '100%', alignItems: 'center' },
   playerContainer: { width: '40%', padding: 20, backgroundColor: '#f7f7f7', borderRadius: 10, marginVertical: 10, alignItems: 'center' },
-  lifeText: { fontSize: 18 },
+  lifeText: { fontSize: 24, fontWeight: 'bold' },
   poisonText: { fontSize: 18 },
   buttonRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 },
-  button: { flex: 1, padding: 10, backgroundColor: '#007BFF', borderRadius: 5, marginHorizontal: 5 },
-  poisonButton: { padding: 10, backgroundColor: '#6C757D', borderRadius: 5 },
+  button: { flex: 1, padding: 10, backgroundColor: '#007BFF', borderRadius: 5, marginHorizontal: 5, alignItems: 'center', justifyContent: 'center' },
+  poisonButton: { padding: 10, backgroundColor: '#6C757D', borderRadius: 5, alignItems: 'center', justifyContent: 'center' },
   poisonButtonText: { color: '#fff' },
-  resetButton: { padding: 15, backgroundColor: '#FFC107', borderRadius: 5, marginVertical: 20 },
+  resetButton: { padding: 15, backgroundColor: '#FFC107', borderRadius: 5, marginVertical: 20, alignItems: 'center', justifyContent: 'center' },
   resetButtonText: { color: '#fff' },
   poisonChangeContainer: { flexDirection: 'row', justifyContent: 'center', marginTop: 20 },
   poisonChangeButton: { padding: 10, backgroundColor: '#17A2B8', borderRadius: 5, marginHorizontal: 10 },
@@ -246,4 +250,5 @@ const styles = StyleSheet.create({
   bottomLeftQuarter: { flex: 1, justifyContent: 'center', alignItems: 'center', width: '70%', position: 'absolute', bottom: 100, left: -25 },
   bottomRightQuarter: { flex: 1, justifyContent: 'center', alignItems: 'center', width: '70%', position: 'absolute', bottom: 100, right: -25 },
   centerPosition: { alignSelf: 'center' }, // Výchozí pozice
+  lifeTextDanger: { color: 'red', fontWeight: 'bold' },
 });
