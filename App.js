@@ -240,10 +240,10 @@ const styles = StyleSheet.create({
   closeModalText: { color: '#fff' },
   topHalf: { flex: 1, justifyContent: 'center', alignItems: 'center', width: '90%' },
   bottomHalf: { flex: 1, justifyContent: 'center', alignItems: 'center', width: '90%' },
-  topLeftQuarter: { flex: 1, justifyContent: 'center', alignItems: 'center', width: '50%', position: 'absolute', top: 0, left: 0 },
-  topRightQuarter: { flex: 1, justifyContent: 'center', alignItems: 'center', width: '50%', position: 'absolute', top: 0, right: 0 },
-  bottomCenterHalf: { flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%', position: 'absolute', bottom: 70, width: '90%'},
-  bottomLeftQuarter: { flex: 1, justifyContent: 'center', alignItems: 'center', width: '50%', position: 'absolute', bottom: 0, left: 0 },
-  bottomRightQuarter: { flex: 1, justifyContent: 'center', alignItems: 'center', width: '50%', position: 'absolute', bottom: 0, right: 0 },
+  topLeftQuarter: { flex: 1, justifyContent: 'center', alignItems: 'center', width: '70%', position: 'absolute', top: 100, left: -25 },
+  topRightQuarter: { flex: 1, justifyContent: 'center', alignItems: 'center', width: '70%', position: 'absolute', top: 100, right: -25 },
+  bottomCenterHalf: { flex: 1, justifyContent: 'center', alignItems: 'center', width: '90%', position: 'absolute', bottom: 100 },
+  bottomLeftQuarter: { flex: 1, justifyContent: 'center', alignItems: 'center', width: '70%', position: 'absolute', bottom: 100, left: -25 },
+  bottomRightQuarter: { flex: 1, justifyContent: 'center', alignItems: 'center', width: '70%', position: 'absolute', bottom: 100, right: -25 },
   centerPosition: { alignSelf: 'center' }, // Výchozí pozice
 });
